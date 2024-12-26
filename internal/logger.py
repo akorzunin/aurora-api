@@ -11,8 +11,8 @@ from uvicorn.protocols.utils import get_path_with_query_string
 
 def drop_color_message_key(_, __, event_dict: EventDict) -> EventDict:
     """
-    Uvicorn logs the message a second time in the extra `color_message`, but we don't
-    need it. This processor drops the key from the event dict if it exists.
+    Uvicorn logs the message a second time in the extra `color_message`, but we
+    don't need it. This processor drops the key from the event dict if it exists
     """
     event_dict.pop("color_message", None)
     return event_dict
@@ -90,8 +90,8 @@ def setup_logging(
 
     # Since we re-create the access logs ourselves, to add all information
     # in the structured log (see the `logging_middleware` in main.py), we clear
-    # the handlers and prevent the logs to propagate to a logger higher up in the
-    # hierarchy (effectively rendering them silent).
+    # the handlers and prevent the logs to propagate to a logger higher up in
+    # the hierarchy (effectively rendering them silent).
     logging.getLogger("uvicorn.access").handlers.clear()
     logging.getLogger("uvicorn.access").propagate = False
 
@@ -133,7 +133,7 @@ def setup_uvicorn_logging(
             process_time = str((time.perf_counter_ns() - start_time) / 10**9)
             url = get_path_with_query_string(request.scope)
             access_logger.info(
-                f"{request.method} {url} HTTP/{request.scope['http_version']} {response.status_code}",
+                f"{request.method} {url} HTTP/{request.scope['http_version']} {response.status_code}",  # noqa: E501
                 http={
                     "url": request.scope.get("path"),
                     "status_code": response.status_code,

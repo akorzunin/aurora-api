@@ -1,6 +1,6 @@
+import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import structlog
 
 from internal.api_router import router
 from internal.logger import setup_logging, setup_uvicorn_logging
