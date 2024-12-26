@@ -15,10 +15,13 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4.1.7
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.11"
       - uses: pre-commit/action@v3.0.1
 
   build:
-    name: 🚀 Deploy
+    name: 🐳 Build Docker image
     runs-on: ubuntu-22.04
     needs: check
     steps:
