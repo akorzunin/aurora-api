@@ -1,0 +1,10 @@
+services:
+  aurora-api:
+    image: aurora-api:latest
+    container_name: aurora-api
+    build: .
+    ports:
+      - ${PORT:-8000}:8000
+    environment:
+      - IGNORE_CORS=true
+    restart: unless-stopped
