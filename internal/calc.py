@@ -89,7 +89,7 @@ def aurora_probability(
     # Зона видимости по Kp-индексу
     visibility_zone = kp_zone(kp.kp)
     base_probability = max(
-        0, (100 - (visibility_zone - geomagnetic_latitude)) * 10
+        0, (100 - (visibility_zone - geomagnetic_latitude) * 10)
     )
 
     # Весовые коэффициенты

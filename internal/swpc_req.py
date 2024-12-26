@@ -65,4 +65,4 @@ def use_kp_client() -> SwpcKpReq:
     return SwpcKpReq.model_validate(data)
 
 
-KpDep = Annotated[float, Depends(use_kp_client)]
+KpDep = Annotated[SwpcKpReq, Depends(use_kp_client)]
