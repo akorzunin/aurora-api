@@ -31,13 +31,13 @@ UserBody = Annotated[
     AuroraProbabilityBody,
     Body(
         openapi_examples={
-             "Murmansk": {
+            "Murmansk": {
                 "value": {
                     "lat": 68.9792,
                     "lon": 33.0925,
                 }
-             },
-             "Kirov": {
+            },
+            "Kirov": {
                 "value": {
                     "lat": 58.6,
                     "lon": 49.6,
