@@ -74,23 +74,23 @@ class AuroraProbabilityResponse(BaseModel):
     response_model=AuroraProbabilityResponse,
 )
 async def api_aurora_probability(
-    uq: UserBody,
+    ub: UserBody,
     dst: swpc_req.DstDep,
     bz: swpc_req.BzDep,
     kp: swpc_req.KpDep,
 ):
     ad = SwpcApiData(dst=dst, bz=bz, kp=kp)
     res = aurora_probability(
-        user_data=uq,
+        user_data=ub,
         dst=ad.dst,
         bz=ad.bz,
         kp=ad.kp,
-        speed=uq.speed,
-        clouds=uq.clouds,
+        speed=ub.speed,
+        clouds=ub.clouds,
     )
 
     return AuroraProbabilityResponse(
         calc_data=res,
-        user_data=uq,
+        user_data=ub,
         api_data=ad,
     )

@@ -1,7 +1,3 @@
-# bz_client =
-# dst_client =
-# kp_client =
-
 from datetime import datetime
 from typing import Annotated
 
