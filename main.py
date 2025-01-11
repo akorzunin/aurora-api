@@ -13,7 +13,7 @@ setup_logging(
 access_logger = structlog.stdlib.get_logger("api.access")
 # log = structlog.stdlib.get_logger(__name__)
 
-app = FastAPI()
+app = FastAPI(swagger_ui_parameters={"syntaxHighlight": False})
 setup_uvicorn_logging(app, access_logger)
 
 app.include_router(router)
