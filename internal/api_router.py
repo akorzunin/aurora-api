@@ -6,6 +6,8 @@ from pydantic import AwareDatetime, BaseModel
 
 from internal import swpc_req
 from internal.calc import AuroraProbabilityCalculation, aurora_probability
+from internal.db.models import Cities
+from internal.db.schemas import City
 from internal.nooa import nooa_req
 
 router = APIRouter(
@@ -110,3 +112,8 @@ async def api_aurora_kp_3(aurora_kp_res: nooa_req.Kp3Dep):
 @router.get("/aurora-kp-27", response_model=nooa_req.NooaAuroraKp27Req)
 async def api_aurora_kp_map(aurora_kp_res: nooa_req.Kp27Dep):
     return aurora_kp_res
+
+
+@router.get("/all-cities", response_model=list[City])
+async def api_all_cities():
+    return await Cities.all()

@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from internal import user_router
+from internal import admin_router, user_router
 from internal.api_router import router
 from internal.db.config import register_orm
 from internal.logger import setup_logging, setup_uvicorn_logging
@@ -44,6 +44,7 @@ setup_uvicorn_logging(app, access_logger)
 
 app.include_router(router)
 app.include_router(user_router.router)
+app.include_router(admin_router.router)
 
 
 @app.exception_handler(tortoise.exceptions.ValidationError)

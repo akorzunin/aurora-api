@@ -89,3 +89,20 @@ class Subscriptions(models.Model):
 
     class Meta:
         table = "subscriptions"
+
+
+class Cities(models.Model):
+    id = fields.IntField(pk=True)
+    name = fields.CharField(max_length=255)
+    lat = fields.FloatField(
+        validators=[
+            MinValueValidator(-90),
+            MaxValueValidator(90),
+        ],
+    )
+    long = fields.FloatField(
+        validators=[
+            MinValueValidator(-180),
+            MaxValueValidator(180),
+        ],
+    )
