@@ -22,6 +22,13 @@
       register: out
       changed_when: out.rc != 0
 
+    - name: Run migrations
+      ansible.builtin.command:
+        cmd: docker compose run aurora-api aerich upgrade
+        chdir: "{{ project_dir }}"
+      register: out
+      changed_when: out.rc != 0
+
     - name: Deploy new image
       ansible.builtin.command:
         cmd: docker compose up -d --force-recreate

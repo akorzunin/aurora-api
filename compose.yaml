@@ -8,3 +8,5 @@ services:
     environment:
       - IGNORE_CORS=true
     restart: unless-stopped
+    volumes:
+      - ${DATA_PATH:-./data}:/app/data

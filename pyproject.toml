@@ -12,6 +12,9 @@ fastapi = "^0.115.6"
 uvicorn = "^0.34.0"
 hishel = "^0.1.1"
 structlog = "^24.4.0"
+tortoise-orm = { extras = ["aiosqlite"], version = "^0.23.0" }
+aerich = { extras = ["toml"], version = "^0.8.1" }
+pydantic = { extras = ["email"], version = "^2.10.5" }
 
 
 [tool.poetry.group.test.dependencies]
@@ -48,3 +51,8 @@ profile = "black"
 python_version = "3.11"
 show_error_codes = true
 explicit_package_bases = true
+
+[tool.aerich]
+tortoise_orm = "internal.db.config.TORTOISE_ORM"
+location = "./migrations"
+src_folder = "./."
