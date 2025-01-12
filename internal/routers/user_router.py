@@ -42,6 +42,7 @@ NewUserBody = Annotated[
 
 @router.post("/new-user", response_model=Cust)
 async def new_user(cust: NewUserBody):
+    """Создание нового пользователя"""
     c = await Customers.create(**cust.model_dump())
     return c
 
@@ -59,6 +60,7 @@ class GetUserResponse(BaseModel):
     },
 )
 async def get_user(id: int):
+    """Получение пользователя и его подписок по id"""
     c = await Customers.get_or_none(id=id)
     if c is None:
         raise HTTPException(status_code=404, detail="Customer not found")
@@ -112,6 +114,7 @@ class CustSubResponse(BaseModel):
     },
 )
 async def new_subscription(sub: NewSubBody):
+    """Создание новой подписки для существующего пользователя"""
     c = await Customers.get_or_none(id=sub.cust_id)
     if c is None:
         raise HTTPException(status_code=404, detail="Customer not found")
@@ -127,6 +130,7 @@ async def new_subscription(sub: NewSubBody):
     },
 )
 async def get_subscription(id: uuid.UUID):
+    """Получение подписки по id"""
     s = await Subscriptions.get_or_none(id=id)
     if s is None:
         raise HTTPException(status_code=404, detail="Subscription not found")

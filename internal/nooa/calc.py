@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from internal import swpc_req
+from internal.nooa import swpc_req
 
 
 # Определение геомагнитной широты

@@ -4,22 +4,15 @@ from typing import Annotated
 from fastapi import APIRouter, Body, Response
 from pydantic import AwareDatetime, BaseModel
 
-from internal import swpc_req
-from internal.calc import AuroraProbabilityCalculation, aurora_probability
 from internal.db.models import Cities
 from internal.db.schemas import City
-from internal.nooa import nooa_req
+from internal.nooa import nooa_req, swpc_req
+from internal.nooa.calc import AuroraProbabilityCalculation, aurora_probability
 
 router = APIRouter(
     prefix="/api/v1",
     tags=["API"],
 )
-
-
-@router.delete("/drop-cache")
-async def drop_cache():
-    swpc_req.storage._cache.cache = {}
-    return {"message": "ok"}
 
 
 class AuroraProbabilityBody(BaseModel):
@@ -82,6 +75,7 @@ async def api_aurora_probability(
     bz: swpc_req.BzDep,
     kp: swpc_req.KpDep,
 ):
+    """Получение вероятности северного сияния по заданным параметрам"""
     ad = SwpcApiData(dst=dst, bz=bz, kp=kp)
     res = aurora_probability(
         user_data=ub,
@@ -101,19 +95,23 @@ async def api_aurora_probability(
 
 @router.get("/aurora-map", response_model=nooa_req.NooaAuroraReq)
 async def api_aurora_map(aurora_res: nooa_req.AuroraDep):
+    """Получение карты северного сияния"""
     return Response(content=aurora_res, media_type="application/json")
 
 
 @router.get("/aurora-kp-3", response_model=nooa_req.NooaAuroraKp3Req)
 async def api_aurora_kp_3(aurora_kp_res: nooa_req.Kp3Dep):
+    """Получение планетарного k-индекса за 3 дня"""
     return aurora_kp_res
 
 
 @router.get("/aurora-kp-27", response_model=nooa_req.NooaAuroraKp27Req)
 async def api_aurora_kp_map(aurora_kp_res: nooa_req.Kp27Dep):
+    """Получение планетарного k-индекса за 27 дней"""
     return aurora_kp_res
 
 
 @router.get("/all-cities", response_model=list[City])
 async def api_all_cities():
+    """Получение списка всех городов для выбора"""
     return await Cities.all()
