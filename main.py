@@ -6,7 +6,7 @@ import structlog
 import tortoise
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 
 from internal.db.config import register_orm
 from internal.logger import setup_logging, setup_uvicorn_logging
@@ -40,6 +40,17 @@ app = FastAPI(
     swagger_ui_parameters={"syntaxHighlight": False},
 )
 setup_uvicorn_logging(app, access_logger)
+
+
+@app.get("/health", status_code=200, include_in_schema=False)
+async def health():
+    return {"status": "ok"}
+
+
+@app.get("/", include_in_schema=False)
+async def redirect_docs():
+    return RedirectResponse(url="/docs")
+
 
 app.include_router(api_router.router)
 app.include_router(user_router.router)
