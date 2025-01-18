@@ -19,13 +19,14 @@ long_storage = hishel.InMemoryStorage(capacity=64, ttl=24 * 3600)
 long_client = hishel.CacheClient(storage=long_storage)
 
 
-class NooaAuroraReq(BaseModel):
+class NooaAuroraRes(BaseModel):
     Observation_Time: datetime = Field(alias="Observation Time")
     Forecast_Time: datetime = Field(alias="Forecast Time")
     Data_Format: str = Field(alias="Data Format")
     coordinates: list[list[int]]
 
     model_config = {
+        "populate_by_name": True,
         "json_schema_extra": {
             "examples": [
                 {
@@ -40,7 +41,7 @@ class NooaAuroraReq(BaseModel):
                     ],
                 }
             ]
-        }
+        },
     }
 
 
@@ -55,7 +56,7 @@ def use_nooa_aurora_client() -> bytes:
     return res.content
 
 
-AuroraDep = Annotated[NooaAuroraReq, Depends(use_nooa_aurora_client)]
+AuroraDep = Annotated[NooaAuroraRes, Depends(use_nooa_aurora_client)]
 
 
 # https://services.swpc.noaa.gov/text/3-day-forecast.txt

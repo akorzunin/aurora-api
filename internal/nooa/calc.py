@@ -1,8 +1,12 @@
-from datetime import datetime
+from datetime import datetime, timezone
+from typing import Annotated
 
-from pydantic import BaseModel
+from fastapi import Body
+from pydantic import AwareDatetime, BaseModel, Field
 
 from internal.nooa import swpc_req
+from internal.nooa.nooa_req import NooaAuroraRes
+from internal.validators import GeoFloat
 
 
 # Определение геомагнитной широты
@@ -66,15 +70,47 @@ class AuroraProbabilityCalculation(BaseModel):
     probability: float
 
 
-class AuroraProbabilityRequest(BaseModel):
-    local_time: datetime
+class AuroraProbabilityBody(BaseModel):
+    local_time: AwareDatetime = datetime.now(timezone.utc)
     lat: float
     lon: float
+    speed: float = 450
+    clouds: float = 30
+
+
+UserBody = Annotated[
+    AuroraProbabilityBody,
+    Body(
+        openapi_examples={
+            "Murmansk": {
+                "value": {
+                    "lat": 68.9792,
+                    "lon": 33.0925,
+                }
+            },
+            "Kirov": {
+                "value": {
+                    "lat": 58.6,
+                    "lon": 49.6,
+                }
+            },
+            "Moscow": {
+                "value": {
+                    "local_time": "2023-03-01T00:00:00+03:00",
+                    "lat": 55.75,
+                    "lon": 37.62,
+                    "speed": 450,
+                    "clouds": 30,
+                }
+            },
+        }
+    ),
+]
 
 
 # Основной расчёт:
 def aurora_probability(
-    user_data: AuroraProbabilityRequest,
+    user_data: AuroraProbabilityBody,
     dst: swpc_req.SwpcDstReq,
     bz: swpc_req.SwpcBzReq,
     kp: swpc_req.SwpcKpReq,
@@ -116,4 +152,37 @@ def aurora_probability(
         clouds_weight=clouds_weight,
         time_weight=time_weight,
         probability=min(probability, 100),
+    )
+
+
+class NooaAuroraReq(BaseModel):
+    lat: GeoFloat
+    lon: GeoFloat
+
+
+class AuroraNooaProbabilityResponse(BaseModel):
+    probability: int = Field(le=100, ge=0)
+    lat: int
+    lon: int
+    nooa_lat: int
+    nooa_lon: int
+
+
+def nearst_aurora_probability(
+    pos: NooaAuroraReq,
+    prob_map: NooaAuroraRes,
+):
+    rounded_lat = round(pos.lat, 0)
+    rounded_lon = round(pos.lon, 0)
+    nooa_lon, nooa_lat, pb = next(
+        v
+        for v in prob_map.coordinates
+        if v[:2] == [rounded_lon + 180, rounded_lat]
+    )
+    return AuroraNooaProbabilityResponse(
+        probability=pb,
+        nooa_lat=nooa_lat,
+        nooa_lon=nooa_lon,
+        lat=rounded_lat,
+        lon=rounded_lon,
     )

@@ -1,56 +1,25 @@
-from datetime import datetime, timezone
-from typing import Annotated
+import json
 
-from fastapi import APIRouter, Body, Response
-from pydantic import AwareDatetime, BaseModel
+from fastapi import APIRouter, Response
+from pydantic import BaseModel
 
 from internal.db.models import Cities
 from internal.db.schemas import City
 from internal.nooa import nooa_req, swpc_req
-from internal.nooa.calc import AuroraProbabilityCalculation, aurora_probability
+from internal.nooa.calc import (
+    AuroraNooaProbabilityResponse,
+    AuroraProbabilityBody,
+    AuroraProbabilityCalculation,
+    NooaAuroraReq,
+    UserBody,
+    aurora_probability,
+    nearst_aurora_probability,
+)
 
 router = APIRouter(
     prefix="/api/v1",
     tags=["API"],
 )
-
-
-class AuroraProbabilityBody(BaseModel):
-    local_time: AwareDatetime = datetime.now(timezone.utc)
-    lat: float
-    lon: float
-    speed: float = 450
-    clouds: float = 30
-
-
-UserBody = Annotated[
-    AuroraProbabilityBody,
-    Body(
-        openapi_examples={
-            "Murmansk": {
-                "value": {
-                    "lat": 68.9792,
-                    "lon": 33.0925,
-                }
-            },
-            "Kirov": {
-                "value": {
-                    "lat": 58.6,
-                    "lon": 49.6,
-                }
-            },
-            "Moscow": {
-                "value": {
-                    "local_time": "2023-03-01T00:00:00+03:00",
-                    "lat": 55.75,
-                    "lon": 37.62,
-                    "speed": 450,
-                    "clouds": 30,
-                }
-            },
-        }
-    ),
-]
 
 
 class SwpcApiData(BaseModel):
@@ -93,7 +62,18 @@ async def api_aurora_probability(
     )
 
 
-@router.get("/aurora-map", response_model=nooa_req.NooaAuroraReq)
+@router.post(
+    "/aurora-nooa-probability", response_model=AuroraNooaProbabilityResponse
+)
+async def api_aurora_nooa_probability(
+    req: NooaAuroraReq, aurora_res: nooa_req.AuroraDep
+):
+    """Получение вероятности северного сияния по заданным координатам из nooa"""
+    res = nooa_req.NooaAuroraRes.model_validate(json.loads(aurora_res))  # type: ignore
+    return nearst_aurora_probability(pos=req, prob_map=res)
+
+
+@router.get("/aurora-map", response_model=nooa_req.NooaAuroraRes)
 async def api_aurora_map(aurora_res: nooa_req.AuroraDep):
     """Получение карты северного сияния"""
     return Response(content=aurora_res, media_type="application/json")
