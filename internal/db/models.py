@@ -106,3 +106,28 @@ class Cities(models.Model):
             MaxValueValidator(180),
         ],
     )
+
+
+# Название (например tour_title)
+# Мини-текст (tour_text_mini)
+# Основной текст (tour_text)
+# Заголовок текста (tour_text_head)
+# Стомость (tour_price)
+# Внешний урл (tour_url)
+# Картинка (tour_image)
+
+
+class Tours(models.Model):
+    id = fields.IntField(primary_key=True)
+    name = fields.CharField(max_length=2000)
+    text_mini = fields.CharField(max_length=2000)
+    text = fields.TextField()
+    text_head = fields.CharField(max_length=2000)
+    price = fields.FloatField()
+    url = fields.CharField(max_length=2000)
+    image = fields.CharField(max_length=2000)
+    created_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
+
+    class Meta:
+        table = "tours"

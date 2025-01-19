@@ -1,9 +1,9 @@
 import structlog
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from internal.auth import check_credentials
-from internal.db.models import Cities, Customers
-from internal.db.schemas import City, CityIn, Cust
+from internal.db.models import Cities, Customers, Tours
+from internal.db.schemas import City, CityIn, Cust, Message, Tour, TourIn
 from internal.nooa import nooa_req, swpc_req
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -40,3 +40,26 @@ async def drop_cache():
     nooa_req.storage._cache.cache = {}
     nooa_req.long_storage._cache.cache = {}
     return {"message": "ok"}
+
+
+@router.post("/tour", response_model=Tour)
+async def set_tour(tour: TourIn):
+    """Добавление тура"""
+    t = await Tours.create(**tour.model_dump())
+    return t
+
+
+@router.delete(
+    "/tour/{tour_id}",
+    responses={
+        200: {"model": Message},
+        404: {"model": Message},
+    },
+)
+async def drop_tour(tour_id: int):
+    """Удаление тура"""
+    t = await Tours.get_or_none(id=tour_id)
+    if t is None:
+        raise HTTPException(status_code=404, detail="Tour not found")
+    await t.delete()
+    return Message(detail="ok")

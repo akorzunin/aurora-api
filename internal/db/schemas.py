@@ -5,7 +5,7 @@ from tortoise.contrib.pydantic import (
     pydantic_model_creator,
 )
 
-from internal.db.models import Cities, Customers, Subscriptions
+from internal.db.models import Cities, Customers, Subscriptions, Tours
 from internal.validators import GeoFloat
 
 
@@ -117,3 +117,36 @@ class CityIn(CityIn_Pydantic):
     name: str = Field(max_length=255)
     lat: GeoFloat = Field(le=90, ge=-90)
     long: GeoFloat = Field(le=180, ge=-180)
+
+
+if TYPE_CHECKING:
+
+    class Tour_Pydantic(BaseModel):
+        pass
+
+else:
+    Tour_Pydantic = pydantic_model_creator(
+        Tours,
+        name="Tours",
+    )
+
+
+class Tour(Tour_Pydantic):
+    pass
+
+
+if TYPE_CHECKING:
+
+    class TourIn_Pydantic(BaseModel):
+        pass
+
+else:
+    TourIn_Pydantic = pydantic_model_creator(
+        Tours,
+        name="ToursIn",
+        exclude_readonly=True,
+    )
+
+
+class TourIn(TourIn_Pydantic):
+    pass

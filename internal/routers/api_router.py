@@ -3,8 +3,8 @@ import json
 from fastapi import APIRouter, Response
 from pydantic import BaseModel
 
-from internal.db.models import Cities
-from internal.db.schemas import City
+from internal.db.models import Cities, Tours
+from internal.db.schemas import City, Tour
 from internal.nooa import nooa_req, swpc_req
 from internal.nooa.calc import (
     AuroraNooaProbabilityResponse,
@@ -95,3 +95,9 @@ async def api_aurora_kp_map(aurora_kp_res: nooa_req.Kp27Dep):
 async def api_all_cities():
     """Получение списка всех городов для выбора"""
     return await Cities.all()
+
+
+@router.get("/all-tours", response_model=list[Tour])
+async def api_all_tours():
+    """Получение списка всех туров для выбора"""
+    return await Tours.all()
