@@ -10,3 +10,4 @@ services:
     restart: unless-stopped
     volumes:
       - ${DATA_PATH:-./data}:/app/data
+      - ${MEDIA_PATH:-./media}:/app/media

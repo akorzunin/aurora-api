@@ -1,6 +1,9 @@
 import json
 
-from fastapi import APIRouter, Response
+from fastapi import (
+    APIRouter,
+    Response,
+)
 from pydantic import BaseModel
 
 from internal.db.models import Cities, Tours
